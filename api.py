@@ -30,7 +30,7 @@ class Client:
         """
         get request
         """
-        return requests.get(f"{self._host}/{url}", json=data)
+        return requests.get(f"{self._host}/{url}", params=data)
 
     def _post(self, url: str, data: dict) -> requests:
         """
@@ -42,48 +42,60 @@ class Client:
         """
         return version of server
         """
-        return self._get('echo').text
+        return self._get("echo").text
 
-    def _get_all_playlist(self) -> str:
+    def _get_all_playlists(self) -> str:
         """
         get all http links of all torrents in m3u list
         """
-        return self._get('playlistall/all.m3u').text
+        return self._get("playlistall/all.m3u").text
+
+    def _get_playlist(self, torrent_hash: str, from_last: bool = None) -> str:
+        """
+        get http links of torrent by hash in m3u list
+        from_last: flag to exclude viewed
+        """
+        params = {"hash": torrent_hash, "fromlast": from_last}
+        return self._get("playlist", params).text
 
     def _shutdown(self) -> str:
         """
         shutdown server
         """
-        return self._get('shutdown').text
+        return self._get("shutdown").text
 
     def _get_torrents(self) -> dict:
         """
         get list of torrents
         """
-        json_data = {'action': 'list'}
-        return self._post('torrents', data=json_data).json()
+        json_data = {"action": "list"}
+        return self._post("torrents", data=json_data).json()
 
     def _get_cache(self, torrent_hash: str) -> dict:
         """
         get torrent by cache
         """
-        json_data = {
-            'action': 'get',
-            'hash': torrent_hash,
-        }
-        return self._post('cache', data=json_data).json()
+        json_data = {"action": "get", "hash": torrent_hash}
+        return self._post("cache", data=json_data).json()
 
     def list_torrents(self) -> list[Torrent]:
         """
         get list of torrents
         """
-        torrents = [Torrent(
-            title=torrent_dict["title"],
-            poster=torrent_dict["poster"],
-            files=[File(**file_dict) for file_dict in json.loads(torrent_dict["data"])["TorrServer"]["Files"]],
-            date=datetime.fromtimestamp(torrent_dict["timestamp"]),
-            hash=torrent_dict["hash"],
-            torrent_size=torrent_dict["torrent_size"],
-        )
-            for torrent_dict in self._get_torrents()]
+        torrents = [
+            Torrent(
+                title=torrent_dict["title"],
+                poster=torrent_dict["poster"],
+                files=[
+                    File(**file_dict)
+                    for file_dict in json.loads(torrent_dict["data"])["TorrServer"][
+                        "Files"
+                    ]
+                ],
+                date=datetime.fromtimestamp(torrent_dict["timestamp"]),
+                hash=torrent_dict["hash"],
+                torrent_size=torrent_dict["torrent_size"],
+            )
+            for torrent_dict in self._get_torrents()
+        ]
         return torrents
