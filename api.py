@@ -32,9 +32,19 @@ class Client:
     def _post(self, url: str, data: dict) -> dict:
         return requests.post(f"{self._host}/{url}", json=data).json()
 
+    def _create_torrent(self, **kwargs):
+        pass
+
     def _get_torrents(self) -> dict:
         json_data = {'action': 'list'}
         return self._post(f'torrents', data=json_data)
+
+    def _get_cache(self, torrent_hash: str) -> dict:
+        json_data = {
+            'action': 'get',
+            'hash': torrent_hash,
+        }
+        return self._post(f'cache', data=json_data)
 
     def list_torrents(self) -> list[Torrent]:
         torrents = [Torrent(
