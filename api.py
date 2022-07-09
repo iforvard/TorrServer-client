@@ -26,10 +26,15 @@ class Client:
     def __init__(self, host: str) -> None:
         self._host = host
 
+    def _get(self):
+        pass
+
+    def _post(self, url: str, data: dict) -> dict:
+        return requests.post(f"{self._host}/{url}", json=data).json()
+
     def _get_torrents(self) -> dict:
         json_data = {'action': 'list'}
-        response = requests.post(f'{self._host}/torrents', json=json_data)
-        return response.json()
+        return self._post(f'torrents', data=json_data)
 
     def list_torrents(self) -> list[Torrent]:
         torrents = [Torrent(
