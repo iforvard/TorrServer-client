@@ -26,27 +26,51 @@ class Client:
     def __init__(self, host: str) -> None:
         self._host = host
 
-    def _get(self):
-        pass
+    def _get(self, url: str, data: dict) -> requests:
+        """
+        get request
+        """
+        return requests.get(f"{self._host}/{url}", json=data)
 
-    def _post(self, url: str, data: dict) -> dict:
-        return requests.post(f"{self._host}/{url}", json=data).json()
+    def _post(self, url: str, data: dict) -> requests:
+        """
+        post request
+        """
+        return requests.post(f"{self._host}/{url}", json=data)
 
-    def _create_torrent(self, **kwargs):
-        pass
+    def _echo(self) -> str:
+        """
+        return version of server
+        """
+        return self._get(f'echo', data={}).content.decode()
+
+    def _shutdown(self) -> str:
+        """
+        shutdown server
+        """
+        return self._get(f'shutdown', data={}).content.decode()
 
     def _get_torrents(self) -> dict:
+        """
+        get list of torrents
+        """
         json_data = {'action': 'list'}
-        return self._post(f'torrents', data=json_data)
+        return self._post(f'torrents', data=json_data).json()
 
     def _get_cache(self, torrent_hash: str) -> dict:
+        """
+        get torrent by cache
+        """
         json_data = {
             'action': 'get',
             'hash': torrent_hash,
         }
-        return self._post(f'cache', data=json_data)
+        return self._post(f'cache', data=json_data).json()
 
     def list_torrents(self) -> list[Torrent]:
+        """
+        get list of torrents
+        """
         torrents = [Torrent(
             title=torrent_dict["title"],
             poster=torrent_dict["poster"],
