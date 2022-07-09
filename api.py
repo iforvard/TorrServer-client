@@ -26,7 +26,7 @@ class Client:
     def __init__(self, host: str) -> None:
         self._host = host
 
-    def _get(self, url: str, data: dict) -> requests:
+    def _get(self, url: str, data: dict = None) -> requests:
         """
         get request
         """
@@ -42,20 +42,26 @@ class Client:
         """
         return version of server
         """
-        return self._get(f'echo', data={}).content.decode()
+        return self._get('echo').text
+
+    def _get_all_playlist(self) -> str:
+        """
+        get all http links of all torrents in m3u list
+        """
+        return self._get('playlistall/all.m3u').text
 
     def _shutdown(self) -> str:
         """
         shutdown server
         """
-        return self._get(f'shutdown', data={}).content.decode()
+        return self._get('shutdown').text
 
     def _get_torrents(self) -> dict:
         """
         get list of torrents
         """
         json_data = {'action': 'list'}
-        return self._post(f'torrents', data=json_data).json()
+        return self._post('torrents', data=json_data).json()
 
     def _get_cache(self, torrent_hash: str) -> dict:
         """
@@ -65,7 +71,7 @@ class Client:
             'action': 'get',
             'hash': torrent_hash,
         }
-        return self._post(f'cache', data=json_data).json()
+        return self._post('cache', data=json_data).json()
 
     def list_torrents(self) -> list[Torrent]:
         """
