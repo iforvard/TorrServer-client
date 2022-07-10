@@ -76,11 +76,10 @@ class TorrentAPI(BaseAPI):
         """
         upload torrent file
         """
-        json_data = {"title": title, "poster": poster, "save": save_to_db}
+        data = {"title": title, "poster": poster, "save": save_to_db}
         with open(path, "rb") as file:
-            return self._post(
-                "torrent/upload", data=json_data, files={path: file}
-            ).json()
+            files_date = {path: file}
+            return self._post("torrent/upload", data=data, files=files_date).json()
 
     def _get_torrents(self) -> dict:
         """
