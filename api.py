@@ -110,6 +110,20 @@ class TorrentAPI(BaseAPI):
         }
         return self._post("torrents", json=json_data).json()
 
+    def _set_torrent(
+        self, torrent_hash: str, title: str = None, poster: str = None
+    ) -> str:
+        """
+        update torrent by hash
+        """
+        json_data = {
+            "action": "set",
+            "hash": torrent_hash,
+            "title": title,
+            "poster": poster,
+        }
+        return self._post("torrents", json=json_data).text
+
     def _get_cache(self, torrent_hash: str) -> dict:
         """
         get torrent by cache
