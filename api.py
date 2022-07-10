@@ -22,7 +22,7 @@ class Torrent:
     torrent_size: int
 
 
-class Client:
+class BaseAPI:
     def __init__(self, host: str) -> None:
         self._host = host
 
@@ -38,12 +38,22 @@ class Client:
         """
         return requests.post(f"{self._host}/{url}", json=data)
 
+
+class ServerAPI(BaseAPI):
     def _echo(self) -> str:
         """
         return version of server
         """
         return self._get("echo").text
 
+    def _shutdown(self) -> str:
+        """
+        shutdown server
+        """
+        return self._get("shutdown").text
+
+
+class TorrentAPI(BaseAPI):
     def _get_all_playlists(self) -> str:
         """
         get all http links of all torrents in m3u list
@@ -57,12 +67,6 @@ class Client:
         """
         params = {"hash": torrent_hash, "fromlast": from_last}
         return self._get("playlist", params).text
-
-    def _shutdown(self) -> str:
-        """
-        shutdown server
-        """
-        return self._get("shutdown").text
 
     def _get_torrents(self) -> dict:
         """
@@ -121,3 +125,9 @@ class Client:
             for torrent_dict in self._get_torrents()
         ]
         return torrents
+
+
+class Client(ServerAPI, TorrentAPI):
+    """
+    TorrServer API client
+    """
