@@ -88,11 +88,18 @@ class TorrentAPI(BaseAPI):
         json_data = {"action": "list"}
         return self._post("torrents", json=json_data).json()
 
-    def _delete_torrent(self, torrent_hash: str) -> str:
+    def _remove_torrent(self, torrent_hash: str) -> str:
         """
         delete torrent by hash
         """
         json_data = {"action": "rem", "hash": torrent_hash}
+        return self._post("torrents", json=json_data).text
+
+    def _drop_torrent(self, torrent_hash: str) -> str:
+        """
+        drop torrent settings by hash
+        """
+        json_data = {"action": "drop", "hash": torrent_hash}
         return self._post("torrents", json=json_data).text
 
     def _add_torrent(
@@ -126,10 +133,17 @@ class TorrentAPI(BaseAPI):
 
     def _get_cache(self, torrent_hash: str) -> dict:
         """
-        get torrent by cache
+        get torrent by hash
         """
         json_data = {"action": "get", "hash": torrent_hash}
         return self._post("cache", json=json_data).json()
+
+    def _get_torrent(self, torrent_hash: str) -> dict:
+        """
+        get torrent by hash
+        """
+        json_data = {"action": "get", "hash": torrent_hash}
+        return self._post("torrents", json=json_data).json()
 
     def list_torrents(self) -> list[Torrent]:
         """
