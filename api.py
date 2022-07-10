@@ -53,7 +53,7 @@ class ServerAPI(BaseAPI):
         return self._get("shutdown").text
 
 
-class TorrentAPI(BaseAPI):
+class PlaylistAPI(BaseAPI):
     def _get_all_playlists(self) -> str:
         """
         get all http links of all torrents in m3u list
@@ -68,6 +68,8 @@ class TorrentAPI(BaseAPI):
         params = {"hash": torrent_hash, "fromlast": from_last}
         return self._get("playlist", params).text
 
+
+class TorrentAPI(BaseAPI):
     def _get_torrents(self) -> dict:
         """
         get list of torrents
@@ -127,7 +129,7 @@ class TorrentAPI(BaseAPI):
         return torrents
 
 
-class Client(ServerAPI, TorrentAPI):
+class Client(ServerAPI, PlaylistAPI, TorrentAPI):
     """
     TorrServer API client
     """
