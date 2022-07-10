@@ -26,17 +26,17 @@ class BaseAPI:
     def __init__(self, host: str) -> None:
         self._host = host
 
-    def _get(self, url: str, data: dict = None) -> requests:
+    def _get(self, url: str, **kwargs) -> requests:
         """
         get request
         """
-        return requests.get(f"{self._host}/{url}", params=data)
+        return requests.get(f"{self._host}/{url}", **kwargs)
 
-    def _post(self, url: str, data: dict) -> requests:
+    def _post(self, url: str, **kwargs) -> requests:
         """
         post request
         """
-        return requests.post(f"{self._host}/{url}", json=data)
+        return requests.post(f"{self._host}/{url}", **kwargs)
 
 
 class ServerAPI(BaseAPI):
@@ -66,23 +66,35 @@ class PlaylistAPI(BaseAPI):
         from_last: flag to exclude viewed
         """
         params = {"hash": torrent_hash, "fromlast": from_last}
-        return self._get("playlist", params).text
+        return self._get("playlist", params=params).text
 
 
 class TorrentAPI(BaseAPI):
+    def _upload_torrent(
+        self, path: str, title: str = "", poster: str = "", save_to_db: bool = True
+    ) -> dict:
+        """
+        upload torrent file
+        """
+        json_data = {"title": title, "poster": poster, "save": save_to_db}
+        with open(path, "rb") as file:
+            return self._post(
+                "torrent/upload", data=json_data, files={path: file}
+            ).json()
+
     def _get_torrents(self) -> dict:
         """
         get list of torrents
         """
         json_data = {"action": "list"}
-        return self._post("torrents", data=json_data).json()
+        return self._post("torrents", json=json_data).json()
 
     def _delete_torrent(self, torrent_hash: str) -> str:
         """
         delete torrent by hash
         """
         json_data = {"action": "rem", "hash": torrent_hash}
-        return self._post("torrents", data=json_data).text
+        return self._post("torrents", json=json_data).text
 
     def _add_torrent(
         self, link: str, title: str = "", poster: str = "", save_to_db: bool = True
@@ -97,14 +109,14 @@ class TorrentAPI(BaseAPI):
             "poster": poster,
             "save_to_db": save_to_db,
         }
-        return self._post("torrents", data=json_data).json()
+        return self._post("torrents", json=json_data).json()
 
     def _get_cache(self, torrent_hash: str) -> dict:
         """
         get torrent by cache
         """
         json_data = {"action": "get", "hash": torrent_hash}
-        return self._post("cache", data=json_data).json()
+        return self._post("cache", json=json_data).json()
 
     def list_torrents(self) -> list[Torrent]:
         """
