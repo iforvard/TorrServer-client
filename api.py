@@ -75,8 +75,23 @@ class Client:
         """
         delete torrent by hash
         """
-        json_data = {'action': 'rem', 'hash': torrent_hash}
+        json_data = {"action": "rem", "hash": torrent_hash}
         return self._post("torrents", data=json_data).text
+
+    def _add_torrent(
+        self, link: str, title: str = "", poster: str = "", save_to_db: bool = True
+    ) -> dict:
+        """
+        add torrent by link http, https or magnet
+        """
+        json_data = {
+            "action": "add",
+            "link": link,
+            "title": title,
+            "poster": poster,
+            "save_to_db": save_to_db,
+        }
+        return self._post("torrents", data=json_data).json()
 
     def _get_cache(self, torrent_hash: str) -> dict:
         """
