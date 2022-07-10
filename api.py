@@ -71,6 +71,13 @@ class Client:
         json_data = {"action": "list"}
         return self._post("torrents", data=json_data).json()
 
+    def _delete_torrent(self, torrent_hash: str) -> str:
+        """
+        delete torrent by hash
+        """
+        json_data = {'action': 'rem', 'hash': torrent_hash}
+        return self._post("torrents", data=json_data).text
+
     def _get_cache(self, torrent_hash: str) -> dict:
         """
         get torrent by cache
