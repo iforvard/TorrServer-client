@@ -39,6 +39,15 @@ class BaseAPI:
         return requests.post(f"{self._host}/{url}", **kwargs)
 
 
+class SettingsAPI(BaseAPI):
+    def _get_settings(self) -> dict:
+        """
+        get torrent by hash
+        """
+        json_data = {"action": "get"}
+        return self._post("settings", json=json_data).json()
+
+
 class ServerAPI(BaseAPI):
     def _echo(self) -> str:
         """
@@ -71,7 +80,7 @@ class PlaylistAPI(BaseAPI):
 
 class TorrentAPI(BaseAPI):
     def _upload_torrent(
-        self, path: str, title: str = "", poster: str = "", save_to_db: bool = True
+            self, path: str, title: str = "", poster: str = "", save_to_db: bool = True
     ) -> dict:
         """
         upload torrent file
@@ -103,7 +112,7 @@ class TorrentAPI(BaseAPI):
         return self._post("torrents", json=json_data).text
 
     def _add_torrent(
-        self, link: str, title: str = "", poster: str = "", save_to_db: bool = True
+            self, link: str, title: str = "", poster: str = "", save_to_db: bool = True
     ) -> dict:
         """
         add torrent by link http, https or magnet
@@ -118,7 +127,7 @@ class TorrentAPI(BaseAPI):
         return self._post("torrents", json=json_data).json()
 
     def _set_torrent(
-        self, torrent_hash: str, title: str = None, poster: str = None
+            self, torrent_hash: str, title: str = None, poster: str = None
     ) -> str:
         """
         update torrent by hash
@@ -168,7 +177,7 @@ class TorrentAPI(BaseAPI):
         return torrents
 
 
-class Client(ServerAPI, PlaylistAPI, TorrentAPI):
+class Client(ServerAPI, SettingsAPI, PlaylistAPI, TorrentAPI):
     """
     TorrServer API client
     """
