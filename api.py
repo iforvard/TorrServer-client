@@ -154,6 +154,12 @@ class TorrentAPI(BaseAPI):
         json_data = {"action": "get", "hash": torrent_hash}
         return self._post("torrents", json=json_data).json()
 
+
+class Client(ServerAPI, SettingsAPI, PlaylistAPI, TorrentAPI):
+    """
+    TorrServer API client
+    """
+
     def list_torrents(self) -> list[Torrent]:
         """
         get list of torrents
@@ -175,9 +181,3 @@ class TorrentAPI(BaseAPI):
             for torrent_dict in self._get_torrents()
         ]
         return torrents
-
-
-class Client(ServerAPI, SettingsAPI, PlaylistAPI, TorrentAPI):
-    """
-    TorrServer API client
-    """
